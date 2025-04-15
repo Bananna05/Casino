@@ -1,0 +1,22 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ */
+
+package com.mycompany.user;
+import java.util.ArrayList;
+import java.util.List;
+/**
+ *
+ * @author robbi
+ */
+class User {
+    String username;
+    String password;
+    List<String> gamblingHistory;
+
+    User(String username, String password) {
+        this.username = username;
+        this.password = password;
+        this.gamblingHistory = new ArrayList<>();
+    }
+}
