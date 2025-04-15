@@ -1,0 +1,42 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+package com.mycompany.user;
+import java.util.Random;
+/**
+ *
+ * @author robbi
+ */
+class Blackjack {
+    public String play() {
+        Random random = new Random();
+        int playerCard1 = random.nextInt(10) + 1;
+        int playerCard2 = random.nextInt(10) + 1;
+        int dealerCard1 = random.nextInt(10) + 1;
+        int dealerCard2 = random.nextInt(10) + 1;
+
+        int playerTotal = playerCard1 + playerCard2;
+        int dealerTotal = dealerCard1 + dealerCard2;
+
+        System.out.println("\nBlackjack:");
+        System.out.println("Your cards: " + playerCard1 + " + " + playerCard2 + " = " + playerTotal);
+        System.out.println("Dealer's cards: " + dealerCard1 + " + " + dealerCard2 + " = " + dealerTotal);
+
+        String result = "Blackjack - Player: " + playerTotal + ", Dealer: " + dealerTotal;
+        if (playerTotal > 21) {
+            System.out.println("Bust! You lose!");
+            result += " (Loss)";
+        } else if (dealerTotal > 21 || playerTotal > dealerTotal) {
+            System.out.println("You win!");
+            result += " (Win)";
+        } else if (playerTotal == dealerTotal) {
+            System.out.println("Push (tie)!");
+            result += " (Tie)";
+        } else {
+            System.out.println("Dealer wins!");
+            result += " (Loss)";
+        }
+        return result;
+    }
+}
