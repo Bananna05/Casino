@@ -1,0 +1,31 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+package com.mycompany.user;
+import java.util.Random;
+/**
+ *
+ * @author robbi
+ */
+class SlotMachine {
+    private static final String[] SYMBOLS = {"Cherry", "Bell", "Seven"};
+
+    public String play() {
+        Random random = new Random();
+        String result1 = SYMBOLS[random.nextInt(SYMBOLS.length)];
+        String result2 = SYMBOLS[random.nextInt(SYMBOLS.length)];
+        String result3 = SYMBOLS[random.nextInt(SYMBOLS.length)];
+
+        System.out.println("\nSlot Machine: " + result1 + " | " + result2 + " | " + result3);
+        String result = "Slot Machine - " + result1 + ", " + result2 + ", " + result3;
+        if (result1.equals(result2) && result2.equals(result3)) {
+            System.out.println("Jackpot! You win!");
+            result += " (Win)";
+        } else {
+            System.out.println("Try again!");
+            result += " (Loss)";
+        }
+        return result;
+    }
+}
