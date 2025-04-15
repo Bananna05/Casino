@@ -1,0 +1,201 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+package com.mycompany.user;
+import java.io.*;
+import java.util.*;
+
+/**
+ *
+ * @author robbi
+ */
+public class Casino {
+    private static Map<String, User> users = new HashMap<>();
+    private static User currentUser = null;
+    private static final String USER_FILE = "users.txt";
+    private static final String HISTORY_FILE = "history.txt";
+
+    public static void main(String[] args) {
+        loadUsers();
+        Scanner scanner = new Scanner(System.in);
+
+        while (true) {
+            if (currentUser == null) {
+                System.out.println("\nCasino Game Menu:");
+                System.out.println("1. Sign In");
+                System.out.println("2. Create Account");
+                System.out.println("3. Exit");
+                System.out.print("Choose an option: ");
+
+                int choice = getIntInput(scanner);
+
+                switch (choice) {
+                    case 1:
+                        signIn(scanner);
+                        break;
+                    case 2:
+                        createAccount(scanner);
+                        break;
+                    case 3:
+                        System.out.println("Goodbye!");
+                        scanner.close();
+                        return;
+                    default:
+                        System.out.println("Invalid option. Try again.");
+                }
+            } else {
+                showGameMenu(scanner);
+            }
+        }
+    }
+
+    private static void loadUsers() {
+        try (BufferedReader reader = new BufferedReader(new FileReader(USER_FILE))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(":");
+                if (parts.length == 2) {
+                    users.put(parts[0], new User(parts[0], parts[1]));
+                }
+            }
+        } catch (IOException e) {
+            // File doesn't exist yet, ignore
+        }
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(HISTORY_FILE))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(":", 2);
+                if (parts.length == 2 && users.containsKey(parts[0])) {
+                    users.get(parts[0]).gamblingHistory.add(parts[1]);
+                }
+            }
+        } catch (IOException e) {
+            // File doesn't exist yet, ignore
+        }
+    }
+
+    private static void saveUser(String username, String password) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(USER_FILE, true))) {
+            writer.write(username + ":" + password);
+            writer.newLine();
+        } catch (IOException e) {
+            System.out.println("Error saving user: " + e.getMessage());
+        }
+    }
+
+    private static void saveHistory(String username, String gameResult) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(HISTORY_FILE, true))) {
+            writer.write(username + ":" + gameResult);
+            writer.newLine();
+        } catch (IOException e) {
+            System.out.println("Error saving history: " + e.getMessage());
+        }
+    }
+
+    private static void signIn(Scanner scanner) {
+        System.out.print("Enter username: ");
+        String username = scanner.nextLine();
+        System.out.print("Enter password: ");
+        String password = scanner.nextLine();
+
+        User user = users.get(username);
+        if (user != null && user.password.equals(password)) {
+            currentUser = user;
+            System.out.println("Signed in successfully!");
+        } else {
+            System.out.println("Invalid username or password.");
+        }
+    }
+
+    private static void createAccount(Scanner scanner) {
+        System.out.print("Enter new username: ");
+        String username = scanner.nextLine();
+
+        if (users.containsKey(username)) {
+            System.out.println("Username already exists.");
+            return;
+        }
+
+        System.out.print("Enter new password: ");
+        String password = scanner.nextLine();
+
+        users.put(username, new User(username, password));
+        saveUser(username, password);
+        System.out.println("Account created successfully!");
+    }
+
+    private static void showGameMenu(Scanner scanner) {
+        System.out.println("\nWelcome, " + currentUser.username + "!");
+        System.out.println("1. Check Gambling History");
+        System.out.println("2. Play Slot Machine");
+        System.out.println("3. Play Dice Game");
+        System.out.println("4. Play Blackjack");
+        System.out.println("5. Sign Out");
+        System.out.print("Choose an option: ");
+
+        int choice = getIntInput(scanner);
+
+        switch (choice) {
+            case 1:
+                checkHistory();
+                break;
+            case 2:
+                playSlotMachine();
+                break;
+            case 3:
+                playDiceGame();
+                break;
+            case 4:
+                playBlackjack();
+                break;
+            case 5:
+                currentUser = null;
+                System.out.println("Signed out.");
+                break;
+            default:
+                System.out.println("Invalid option. Try again.");
+        }
+    }
+
+    private static void checkHistory() {
+        System.out.println("\nGambling History for " + currentUser.username + ":");
+        if (currentUser.gamblingHistory.isEmpty()) {
+            System.out.println("No history available.");
+        } else {
+            for (String entry : currentUser.gamblingHistory) {
+                System.out.println("- " + entry);
+            }
+        }
+    }
+
+    private static void playSlotMachine() {
+        SlotMachine slotMachine = new SlotMachine();
+        String result = slotMachine.play();
+        currentUser.gamblingHistory.add(result);
+        saveHistory(currentUser.username, result);
+    }
+
+    private static void playDiceGame() {
+        DiceGame diceGame = new DiceGame();
+        String result = diceGame.play();
+        currentUser.gamblingHistory.add(result);
+        saveHistory(currentUser.username, result);
+    }
+
+    private static void playBlackjack() {
+        Blackjack blackjack = new Blackjack();
+        String result = blackjack.play();
+        currentUser.gamblingHistory.add(result);
+        saveHistory(currentUser.username, result);
+    }
+
+    private static int getIntInput(Scanner scanner) {
+        try {
+            return Integer.parseInt(scanner.nextLine());
+        } catch (NumberFormatException e) {
+            return -1;
+        }
+    }
+}
