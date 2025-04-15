@@ -1,0 +1,29 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+package com.mycompany.user;
+import java.util.Random;
+/**
+ *
+ * @author robbi
+ */
+class DiceGame {
+    public String play() {
+        Random random = new Random();
+        int die1 = random.nextInt(6) + 1;
+        int die2 = random.nextInt(6) + 1;
+        int sum = die1 + die2;
+
+        System.out.println("\nDice Game: You rolled " + die1 + " + " + die2 + " = " + sum);
+        String result = "Dice Game - Rolled " + sum;
+        if (sum == 7 || sum == 11) {
+            System.out.println("You win!");
+            result += " (Win)";
+        } else {
+            System.out.println("You lose!");
+            result += " (Loss)";
+        }
+        return result;
+    }
+}
