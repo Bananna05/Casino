@@ -4,19 +4,38 @@
 
 package com.mycompany.user;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 /**
  *
  * @author robbi
  */
 class User {
-    String username;
-    String password;
-    List<String> gamblingHistory;
+    private final String username;
+    private String password;
+    private final List<String> gamblingHistory;
 
-    User(String username, String password) {
-        this.username = username;
-        this.password = password;
-        this.gamblingHistory = new ArrayList<>();
+public User(String username, String password) {
+    this.username = username;
+    this.password = password;
+    this.gamblingHistory = new ArrayList<>()
+}
+
+public String getUsername() {
+    return username;
+}
+
+public String getPassword(){
+    return passwrod;
+}
+
+public void addGamblingHistory(String entry){
+    gamblingHistory.add(entry);
+}
+
+public List<String> getGamblingHistory{
+    return Collections.unmodifiableList(gamblingHistory);
     }
 }
+
+
