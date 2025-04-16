@@ -4,36 +4,49 @@
 
 package com.mycompany.blackjack;
 import java.util.*;
+import java.io.*;
 
 /**
  *
  * @author regor
  */
 public class Blackjack {
+    static Scanner scanner = new Scanner(System.in);
     static int cardcounter = 0;
-    public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
+    static String name = "earl";
+
+
+    public static void main(String[] args) throws IOException{
+        
+        
         double balance = 500.0;
-        double bet;
         String choice;
         balance = play(balance);
        
         do{
         cardcounter = 0;
         System.out.printf("Balance: $%.2f%n", balance);
+        if(balance==0) 
+        {
+            System.out.println("Ran out of balance! Deposit and spend more money! >:)");
+            break;
+        }
+
         System.out.println("\nDo you want to play again?\n(1) Play (2) Exit\n");
         choice = scanner.next();
         if (choice.equals("1")){
+            
             balance = play(balance);
         }
+        
         else{
             System.out.println("Thank you for playing! Come again!");
         }
-        }while(choice.equals("12"));
+        }while(choice.equals("1"));
+        
     }
     
-    public static double BJ(double bet, double balance){
-        Scanner scanner = new Scanner(System.in);
+    public static double BJ(double bet, double balance) throws IOException{
         int vdealer;
         int vplayer;
         int hidden;
@@ -49,11 +62,13 @@ public class Blackjack {
             
             if(vplayer==21){
                 pwin(vdealer, hidden, vplayer, bet);
+                
                 return bet*2;
             }       
             
-            if((vdealer + hidden) ==21){
-                    plose(vdealer, hidden, vplayer);
+            if((vdealer + hidden) == 21){
+                    plose(vdealer, hidden, vplayer, bet);
+                    
                     return 0;
             }
             
@@ -70,14 +85,17 @@ public class Blackjack {
                 vdealer = stand(vdealer+hidden);
                 if(vdealer>21 || vdealer<vplayer){
                     pwin(vdealer, hidden, vplayer, bet);
+                    
                     return bet*2;
                 }
                 else if(vdealer==21 || vdealer>vplayer){
-                    plose(vdealer, hidden, vplayer);
+                    plose(vdealer, hidden, vplayer, bet);
+                    
                     return 0;   
                 }
                 else if(vplayer == vdealer){
                     System.out.printf("Tie! The bet of $%.2f will be returned.%n", bet);
+                    
                     return bet;
                 }
                 
@@ -85,17 +103,21 @@ public class Blackjack {
             if(choice.equals("1")){
                 vplayer += random();
                 if(vplayer>21){
-                    plose(vdealer, hidden, vplayer);
+                    plose(vdealer, hidden, vplayer, bet);
+                    
                     return 0;
                 }
                 if(vplayer==21){
                     pwin(vdealer, hidden, vplayer, bet);
+                    
                     return bet*2; 
                 }
             }
             
         }while(choice.equalsIgnoreCase("1") || choice.equalsIgnoreCase("2"));
+        
         return 0;
+        
     }
     
     public static int random() {
@@ -116,20 +138,21 @@ public class Blackjack {
     return num;
 }
     
-    public static void pwin(int vdealer, int hidden, int vplayer, double bet){
+    public static void pwin(int vdealer, int hidden, int vplayer, double bet) throws IOException{
         System.out.println(dealerf(vdealer, hidden));
         System.out.println(player(vplayer));
         System.out.printf("You Win! Congratulations for winning $%.2f%n", bet*2);
-
+        ptransac(bet, true);
     }
 
-    public static void plose(int vdealer, int hidden, int vplayer){
+    public static void plose(int vdealer, int hidden, int vplayer, double bet) throws IOException {
         System.out.println(dealerf(vdealer, hidden));
         System.out.println(player(vplayer));
         if(vplayer>21){
         System.out.println("Bust!\n");
         }
         else System.out.println("You lose!\n"); // turn to ternary
+        ptransac(bet, false);
     }
 
     public static String dealer(int vdealer){
@@ -152,18 +175,32 @@ public class Blackjack {
         return value;
     }
     
-    public static double play(double balance){
+    public static double play(double balance) throws IOException{
         double bet;
-        Scanner scanner = new Scanner(System.in);
         System.out.println("Please enter bet.");
         do{
-            bet = scanner.nextInt();
+            bet = scanner.nextDouble();
             if(balance<bet){
                 System.out.println("Please enter sufficient amount.");
             }
         }while(balance<bet);
         balance-=bet;
         return balance = balance + BJ(bet, balance);
+    }
+
+    public static String transac(double bet, boolean win) throws FileNotFoundException, IOException{
+        return String.format("%n----------Blackjack Result----------%nBet: $%.2f, Result: %s, %s: $%.2f%n", bet, (win ? "Win" : "Lose"), (win ? "Amount Won" : "Amount Lost"), (win ? bet*2 : bet));
+    }
+
+    public static void ptransac(double bet, boolean win) throws FileNotFoundException, IOException{
+        FileWriter output = new FileWriter(name+"_transactionhistory.txt", true);
+        PrintWriter print = new PrintWriter(output);
+        Scanner scan = new Scanner(new FileReader(name+"_transactionhistory.txt"));
         
+        System.out.println(transac(bet, win));
+        print.write(transac(bet, win));
+
+        
+        print.close();
     }
 }
