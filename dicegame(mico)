@@ -1,0 +1,87 @@
+-notfinal
+
+import java.util.Random;
+import java.util.Scanner;
+
+	public class Wine {
+	    public static void main(String[] args) {
+	        Scanner scanner = new Scanner(System.in);
+	        Random random = new Random();
+
+	        while (true) {
+	            int playerMoney = 1000;
+	            int bet;
+	            String prediction;
+
+	            System.out.println("Welcome to 7 Over 7 Under!");
+	            System.out.println("Rules: Bet on whether the sum of two dice will be over, under, or exactly 7.");
+	            System.out.println("Payout: Over/Under - 2x bet, Exactly 7 - 4x bet. You start with $1000.");
+
+	            while (playerMoney > 0) {
+	                System.out.println("\nYour money: $" + playerMoney);
+	                System.out.print("Enter your bet (or 0 to quit): $");
+	                bet = scanner.nextInt();
+
+	                if (bet == 0) {
+	                    System.out.println("Thanks for playing! Final balance: $" + playerMoney);
+	                    break;
+	                }
+
+	                if (bet > playerMoney || bet < 0) {
+	                    System.out.println("Invalid bet! Must be between $0 and $" + playerMoney);
+	                    continue;
+	                }
+
+	                System.out.print("Predict (over/under/seven): ");
+	                scanner.nextLine();
+	                prediction = scanner.nextLine().toLowerCase();
+
+	                if (!prediction.equals("over") && !prediction.equals("under") && !prediction.equals("seven")) {
+	                    System.out.println("Invalid prediction! Choose 'over', 'under', or 'seven'.");
+	                    continue;
+	                }
+                
+	                int die1 = random.nextInt(6) + 1;
+	                int die2 = random.nextInt(6) + 1;
+	                int sum = die1 + die2;
+	                System.out.println("Dice rolled: " + die1 + " + " + die2 + " = " + sum);
+                    
+	                if (sum == 7 && prediction.equals("seven")) {
+	                    playerMoney += bet * 4;
+	                    System.out.println("Exactly 7! You win $" + (bet * 4));
+	                } else if (sum > 7 && prediction.equals("over")) {
+	                    playerMoney += bet * 2;
+	                    System.out.println("Over 7! You win $" + (bet * 2));
+	                } else if (sum < 7 && prediction.equals("under")) {
+	                    playerMoney += bet * 2;
+	                    System.out.println("Under 7! You win $" + (bet * 2));
+	                } else {
+	                    playerMoney -= bet;
+	                    System.out.println("You lose $" + bet);
+	                }
+
+	                if (playerMoney <= 0) {
+	                    System.out.println("You're out of money! Game over.");
+	                    System.out.print("Would you like to try again? (yes/no): ");
+	                    String tryAgain = scanner.nextLine().toLowerCase();
+	                    if (!tryAgain.equals("yes")) {
+	                        System.out.println("Thanks for playing!");
+	                        scanner.close();
+	                        return;
+	                    }
+	                    break;
+	                }
+	            }
+
+	            if (playerMoney > 0) {
+	                System.out.print("Would you like to start a new game? (yes/no): ");
+	                String newGame = scanner.nextLine().toLowerCase();
+	                if (!newGame.equals("yes")) {
+	                    System.out.println("Thanks for playing!");
+	                    scanner.close();
+	                    return;
+	                }
+	            }
+	        }
+	    }
+	}
