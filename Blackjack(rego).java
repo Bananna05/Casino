@@ -13,7 +13,7 @@ import java.io.*;
 public class Blackjack {
     static Scanner scanner = new Scanner(System.in);
     static int cardcounter = 0;
-    static String name = "earl";
+    static String name = "niggerlo";
 
 
     public static void main(String[] args) throws IOException{
@@ -22,27 +22,37 @@ public class Blackjack {
         double balance = 500.0;
         String choice;
         balance = play(balance);
-       
+        
         do{
         cardcounter = 0;
-        System.out.printf("Balance: $%.2f%n", balance);
+        
         if(balance==0) 
         {
             System.out.println("Ran out of balance! Deposit and spend more money! >:)");
             break;
         }
-
+        
+        System.out.printf("Balance: $%.2f%n", balance);
         System.out.println("\nDo you want to play again?\n(1) Play (2) Exit\n");
         choice = scanner.next();
+        if(!(choice.equals("1") || choice.equals("2"))){
+            do{
+                    System.out.println("Please enter either 1 or 2.");
+                    System.out.println("\nDo you want to play again?\n(1) Play (2) Exit\n");
+                    choice = scanner.next();
+                }while(!(choice.equals("1") || choice.equals("2")));
+        }
         if (choice.equals("1")){
-            
             balance = play(balance);
         }
         
-        else{
+        else if (choice.equals("2")){
             System.out.println("Thank you for playing! Come again!");
+            break;
         }
-        }while(choice.equals("1"));
+        
+        
+        }while(true);
         
     }
     
@@ -75,11 +85,11 @@ public class Blackjack {
             System.out.println("(1) Hit (2) Stand\n");
             choice = scanner.next();
             System.out.println("");
-            if(!(choice.equalsIgnoreCase("1")|| choice.equalsIgnoreCase("2"))){
+            if(!(choice.equals("1") || choice.equals("2"))){
                 do{
-                    System.out.println("Please enter either 1 or 2");
+                    System.out.println("Please enter either 1 or 2.");
                     choice = scanner.next();
-                }while(choice.equalsIgnoreCase("12"));
+                }while(!(choice.equals("1") || choice.equals("2")));
             }
             if (choice.equals("2")){
                 vdealer = stand(vdealer+hidden);
@@ -95,7 +105,7 @@ public class Blackjack {
                 }
                 else if(vplayer == vdealer){
                     System.out.printf("Tie! The bet of $%.2f will be returned.%n", bet);
-                    
+                    ptie(vdealer, hidden, vplayer, bet);
                     return bet;
                 }
                 
@@ -114,7 +124,7 @@ public class Blackjack {
                 }
             }
             
-        }while(choice.equalsIgnoreCase("1") || choice.equalsIgnoreCase("2"));
+        }while(choice.equals("1") || choice.equals("2"));
         
         return 0;
         
@@ -142,17 +152,22 @@ public class Blackjack {
         System.out.println(dealerf(vdealer, hidden));
         System.out.println(player(vplayer));
         System.out.printf("You Win! Congratulations for winning $%.2f%n", bet*2);
-        ptransac(bet, true);
+        ptransac(bet, true, "win");
     }
 
     public static void plose(int vdealer, int hidden, int vplayer, double bet) throws IOException {
         System.out.println(dealerf(vdealer, hidden));
         System.out.println(player(vplayer));
-        if(vplayer>21){
-        System.out.println("Bust!\n");
-        }
-        else System.out.println("You lose!\n"); // turn to ternary
-        ptransac(bet, false);
+        String output = (vplayer>21 ? "Bust!" : vdealer == 21 ? "Dealer wins through blackjack!" : "Dealer is closest to 21. Dealer wins! ");
+        System.out.println(output);
+        ptransac(bet, false, "lose");
+    }
+    
+    public static void ptie(int vdealer, int hidden, int vplayer, double bet) throws IOException {
+        System.out.println(dealerf(vdealer, hidden));
+        System.out.println(player(vplayer));
+        System.out.printf("The dealer and player cards tied. The bet of $%.2f will be returned.", bet);
+        ptransac(bet, false, "tie");
     }
 
     public static String dealer(int vdealer){
@@ -175,6 +190,11 @@ public class Blackjack {
         return value;
     }
     
+    public static void replay(double balance) throws IOException{
+        String choice;
+        
+    }
+    
     public static double play(double balance) throws IOException{
         double bet;
         System.out.println("Please enter bet.");
@@ -187,18 +207,20 @@ public class Blackjack {
         balance-=bet;
         return balance = balance + BJ(bet, balance);
     }
+    
+    
 
-    public static String transac(double bet, boolean win) throws FileNotFoundException, IOException{
-        return String.format("%n----------Blackjack Result----------%nBet: $%.2f, Result: %s, %s: $%.2f%n", bet, (win ? "Win" : "Lose"), (win ? "Amount Won" : "Amount Lost"), (win ? bet*2 : bet));
+    public static String transac(double bet, boolean win, String result) throws FileNotFoundException, IOException{
+        return String.format("%n----------Blackjack Result----------%nBet: $%.2f, Result: %s, %s: $%.2f%n", bet, (win ? "Win" : result.equalsIgnoreCase("lose") ? "Lose" : "Tie"), (win ? "Amount Won" : result.equalsIgnoreCase("lose") ? "Amount Lost" : "Amount Returned"), (win ? bet*2 : bet));
     }
 
-    public static void ptransac(double bet, boolean win) throws FileNotFoundException, IOException{
+    public static void ptransac(double bet, boolean win, String result) throws FileNotFoundException, IOException{
         FileWriter output = new FileWriter(name+"_transactionhistory.txt", true);
         PrintWriter print = new PrintWriter(output);
         Scanner scan = new Scanner(new FileReader(name+"_transactionhistory.txt"));
         
-        System.out.println(transac(bet, win));
-        print.write(transac(bet, win));
+        System.out.println(transac(bet, win, result));
+        print.write(transac(bet, win, result));
 
         
         print.close();
