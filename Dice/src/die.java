@@ -143,7 +143,7 @@ public class die {
         }
         return playerMoney;
     }
-//test changes2
+//test changes
     private static boolean playAgain(Scanner scanner, int playerMoney) {
         if (playerMoney > 0) {
             String newGame;
