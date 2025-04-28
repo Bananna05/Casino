@@ -1,6 +1,5 @@
 
 import java.util.Random;
-import java.util.ArrayList;
 import java.util.Scanner;
 
 public class die {
@@ -8,6 +7,8 @@ public class die {
     private static int diceSides = 6;
     private static int overUnderPayout = 2;
     private static int sevenPayout = 4;
+    private static int historyInitialSize = 10;
+    private static int historyColumns = 4; // Bet, Prediction, Result, Amount Changed
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
@@ -28,7 +29,9 @@ public class die {
         int bet;
         String prediction;
 
-        ArrayList<String> history = new ArrayList<>();
+        // Initialize 2D array for history: [Bet, Prediction, Result, Amount Changed]
+        String[][] history = new String[historyInitialSize][historyColumns];
+        int historyCount = 0;
 
         System.out.println("Welcome to 7 Over 7 Under!");
         System.out.println("Rules: Bet on whether the sum of two dice will be over, under, or exactly 7.");
@@ -47,11 +50,19 @@ public class die {
 
             if (bet == 0) {
                 System.out.println("\nGame History:");
-                if (history.isEmpty()) {
+                if (historyCount == 0) {
                     System.out.println("No rolls made in this session.");
                 } else {
-                    for (int i = 0; i < history.size(); i++) {
-                        System.out.println((i + 1) + ". " + history.get(i));
+                    for (int i = 0; i < historyCount; i++) {
+                        System.out.printf(
+                            "%d. Bet: $%-4s | Prediction: %-6s | Result: %-4s | %s$%s\n",
+                            (i + 1),
+                            history[i][0],
+                            history[i][1],
+                            history[i][2],
+                            history[i][3].startsWith("-") ? "-" : "+",
+                            history[i][3].replace("-", "")
+                        );
                     }
                 }
                 System.out.println("Thanks for playing! Final balance: $" + playerMoney);
@@ -64,7 +75,7 @@ public class die {
             }
 
             System.out.print("Predict (over/under/seven): ");
-            scanner.nextLine(); // Clear buffer
+            scanner.nextLine();
             prediction = scanner.nextLine().toLowerCase();
 
             if (!prediction.equals("over") && !prediction.equals("under") && !prediction.equals("seven")) {
@@ -72,13 +83,11 @@ public class die {
                 continue;
             }
 
-           
             int die1 = random.nextInt(diceSides) + 1;
             int die2 = random.nextInt(diceSides) + 1;
             int sum = die1 + die2;
             System.out.println("Dice rolled: " + die1 + " + " + die2 + " = " + sum);
 
-            
             String result;
             int amountChange = 0;
 
@@ -104,26 +113,41 @@ public class die {
                 System.out.println("You lose $" + bet);
             }
 
-           
-            String historyEntry = String.format(
-                "Bet: $%-4d | Prediction: %-6s | Result: %-4s | %s$%d",
-                bet,
-                prediction,
-                result,
-                amountChange >= 0 ? "+" : "-",
-                Math.abs(amountChange)
-            );
-            history.add(historyEntry);
+            // Resize history array if full
+            if (historyCount >= history.length) {
+                String[][] newHistory = new String[history.length * 2][historyColumns];
+                for (int i = 0; i < history.length; i++) {
+                    for (int j = 0; j < historyColumns; j++) {
+                        newHistory[i][j] = history[i][j];
+                    }
+                }
+                history = newHistory;
+            }
+
+            // Store history entry in 2D array
+            history[historyCount][0] = String.valueOf(bet);
+            history[historyCount][1] = prediction;
+            history[historyCount][2] = result;
+            history[historyCount][3] = String.valueOf(amountChange);
+            historyCount++;
 
             if (playerMoney <= 0) {
                 System.out.println("You're out of money! Game over.");
 
                 System.out.println("\nGame History:");
-                if (history.isEmpty()) {
+                if (historyCount == 0) {
                     System.out.println("No rolls made in this session.");
                 } else {
-                    for (int i = 0; i < history.size(); i++) {
-                        System.out.println((i + 1) + ". " + history.get(i));
+                    for (int i = 0; i < historyCount; i++) {
+                        System.out.printf(
+                            "%d. Bet: $%-4s | Prediction: %-6s | Result: %-4s | %s$%s\n",
+                            (i + 1),
+                            history[i][0],
+                            history[i][1],
+                            history[i][2],
+                            history[i][3].startsWith("-") ? "-" : "+",
+                            history[i][3].replace("-", "")
+                        );
                     }
                 }
                 String tryAgain;
@@ -138,12 +162,12 @@ public class die {
                 if (!tryAgain.equals("yes")) {
                     return playerMoney;
                 }
-                return playerMoney; // Restart game
+                return playerMoney;
             }
         }
         return playerMoney;
     }
-//test changes
+
     private static boolean playAgain(Scanner scanner, int playerMoney) {
         if (playerMoney > 0) {
             String newGame;
@@ -160,4 +184,3 @@ public class die {
         return false;
     }
 }
-
