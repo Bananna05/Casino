@@ -1,6 +1,8 @@
 
 import java.util.Random;
 import java.util.Scanner;
+import java.time.*; // for LocalDate and LocalTime
+import java.time.format.DateTimeFormatter; // for formatting date and time
 
 public class die {
     private static int startingMoney = 1000;
@@ -47,6 +49,14 @@ public class die {
                 scanner.nextLine();
                 continue;
             }
+                if (bet == 0) {
+                // Get current date and time
+                LocalDate date = LocalDate.now();
+                LocalTime time = LocalTime.now();
+                DateTimeFormatter formatD = DateTimeFormatter.ofPattern("MMM dd, yyyy ");
+                DateTimeFormatter formatT = DateTimeFormatter.ofPattern("hh:mm");
+                String formattedD = date.format(formatD);
+                String formattedT = time.format(formatT);
 
             if (bet == 0) {
                 System.out.println("\nGame History:");
@@ -133,6 +143,13 @@ public class die {
 
             if (playerMoney <= 0) {
                 System.out.println("You're out of money! Game over.");
+                // Get current date and time
+                LocalDate date = LocalDate.now();
+                LocalTime time = LocalTime.now();
+                DateTimeFormatter formatD = DateTimeFormatter.ofPattern("MMM dd, yyyy ");
+                DateTimeFormatter formatT = DateTimeFormatter.ofPattern("hh:mm");
+                String formattedD = date.format(formatD);
+                String formattedT = time.format(formatT);
 
                 System.out.println("\nGame History:");
                 if (historyCount == 0) {
